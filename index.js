@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var program = require('commander');
+var nStore = require('nstore');
 
 function list(val) {
   return val.split(',').map(Number);
@@ -8,9 +9,6 @@ function list(val) {
 program
   .version('0.0.1')
   .option('-c, --clear', 'delete all todo items')
-
-// must be before .parse() since
-// node's emit() is immediate
 
 program.on('--help', function(){
   console.log('  Examples:');
@@ -21,5 +19,13 @@ program.on('--help', function(){
 });
 
 program.parse(process.argv);
+
+var todoItems = nStore.new('data/todo.db', function () {
+	console.log("loaded");
+});
+todoItems.save(null, {title: "Demo", "deadline":"demo"}, function (err, key) {
+    if (err) { throw err; }
+    console.log("created new todo item with key "+key);
+});
 
 console.log('todo.js');
